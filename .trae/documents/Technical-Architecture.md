@@ -7,8 +7,7 @@ graph LR
     A["用户浏览器"] -->|文本/文件输入| B["React 前端应用"]
     B --> C["压缩/解压引擎"]
     C --> D["fflate 库"]
-    C --> E["lzma 库"]
-    B --> F["本地文件下载"]
+    B --> E["本地文件下载"]
 ```
 
 纯前端架构，无后端服务。所有压缩与解压计算在浏览器 Web Worker 或主线程中完成，文件通过 `URL.createObjectURL` 提供下载。
@@ -21,7 +20,6 @@ graph LR
 - **UI 组件**：自定义组件（无需完整组件库，保持轻量）
 - **压缩库**：
   - `fflate`：提供 ZIP、GZIP、DEFLATE、ZLIB 的压缩与解压
-  - `lzma`：提供 LZMA 格式的压缩与解压
 - **图标**：内联 SVG
 
 ## 3. 路由定义
@@ -39,8 +37,8 @@ graph LR
 对外暴露统一接口：
 
 ```typescript
-interface CompressOptions {
-  format: 'zip' | 'gzip' | 'deflate' | 'lzma';
+export interface CompressOptions {
+  format: 'zip' | 'gzip' | 'deflate' | 'zlib';
   level?: number;
 }
 
@@ -53,7 +51,7 @@ async function compress(
 - **ZIP**：使用 `fflate.zip` 将多个文件打包为 .zip
 - **GZIP**：使用 `fflate.gzip` 对单个文件/文本进行压缩，输出 .gz
 - **DEFLATE**：使用 `fflate.deflate` 对单个文件/文本进行压缩，输出 .deflate
-- **LZMA**：使用 `lzma.compress` 对单个文件/文本进行压缩，输出 .lzma
+- **ZLIB**：使用 `fflate.zlib` 对单个文件/文本进行压缩，输出 .zlib
 
 ### 4.2 解压引擎（decompression.ts）
 
@@ -64,14 +62,14 @@ interface DecompressResult {
 
 async function decompress(
   file: File,
-  format?: 'zip' | 'gzip' | 'deflate' | 'lzma'
+  format?: 'zip' | 'gzip' | 'deflate' | 'zlib'
 ): Promise<DecompressResult>;
 ```
 
 - **ZIP**：使用 `fflate.unzip` 解析 .zip
 - **GZIP**：使用 `fflate.gunzip` 解压 .gz
 - **DEFLATE**：使用 `fflate.inflate` 解压 .deflate
-- **LZMA**：使用 `lzma.decompress` 解压 .lzma
+- **ZLIB**：使用 `fflate.unzlib` 解压 .zlib
 
 ## 5. 数据模型
 
